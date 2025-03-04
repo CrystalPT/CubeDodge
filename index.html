@@ -125,6 +125,17 @@
         .contact-form button:hover {
             background: #e62e4c;
         }
+        
+        /* Success message styling */
+        #successMessage {
+            display: none;
+            background: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body style="background: #e7ecef; color: #274c77;">
@@ -175,17 +186,61 @@
     <section id="contact" class="contact-section">
         <h2>Contact Us</h2>
         <div class="contact-info">
-            <p>Email: crystalplayzyt0@gmail.com</p>
+            <p>Email: info@cubedodge.com</p>
         </div>
         <div class="contact-form">
-            <form action="contact.html" method="get">
-                <input type="text" name="name" placeholder="Your Name" required>
-                <input type="email" name="email" placeholder="Your Email" required>
-                <textarea name="message" placeholder="Your Message" required></textarea>
+            <form id="contactForm">
+                <input type="text" name="name" id="name" placeholder="Your Name" required>
+                <input type="email" name="email" id="email" placeholder="Your Email" required>
+                <textarea name="message" id="message" placeholder="Your Message" required></textarea>
                 <button type="submit">Send Message</button>
             </form>
+            <div id="successMessage">Thank you for your message! We'll get back to you soon.</div>
         </div>
     </section>
+
+    <script>
+        document.getElementById('contactForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // Get form values
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+            
+            // In a real implementation, you would send this data to a server
+            // For GitHub Pages, we can use localStorage to store messages for demonstration
+            // This won't be secure or permanent, but can showcase the functionality
+            
+            // Create a message object
+            const newMessage = {
+                name: name,
+                email: email,
+                message: message,
+                date: new Date().toISOString()
+            };
+            
+            // Get existing messages or initialize empty array
+            let messages = JSON.parse(localStorage.getItem('cubeDodgeMessages') || '[]');
+            
+            // Add new message
+            messages.push(newMessage);
+            
+            // Save updated messages
+            localStorage.setItem('cubeDodgeMessages', JSON.stringify(messages));
+            
+            // Reset the form
+            document.getElementById('contactForm').reset();
+            
+            // Show success message
+            document.getElementById('successMessage').style.display = 'block';
+            
+            // Hide success message after 5 seconds
+            setTimeout(function() {
+                document.getElementById('successMessage').style.display = 'none';
+            }, 5000);
+        });
+    </script>
 </body>
 </html>
 <!-- partial -->
