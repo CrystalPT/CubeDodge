@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message Received - CubeDodge</title>
+    <link rel="stylesheet" href="./style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #e7ecef;
+            color: #274c77;
+            padding-top: 60px;
+        }
+        
+        .nav-container {
+            background: #274c77;
+            padding: 10px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .nav-menu li {
+            margin: 0 15px;
+        }
+        
+        .nav-menu a {
+            color: #e7ecef;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 3px;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-menu a:hover {
+            background-color: #6096ba;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #274c77;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .message-box {
+            background: #a3cef1;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #274c77;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .message-content {
+            line-height: 1.6;
+        }
+        
+        .back-button {
+            display: block;
+            width: 200px;
+            background: #274c77;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            margin: 20px auto 0;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .no-messages {
+            text-align: center;
+            font-style: italic;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <div class="nav-container">
+        <ul class="nav-menu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#contact">Contact</a></li>
+            <li><a href="https://github.com/CrystalPT/CubeDodge/releases/">Versions</a></li>
+            <li><a href="https://discord.gg/cubedodge">Discord</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <h1>Message Received</h1>
+        
+        <div id="messageDisplay">
+            <!-- Messages will be displayed here -->
+        </div>
+        
+        <a href="index.html" class="back-button">Back to Home</a>
+    </div>
+
+    <script>
+        // Get URL parameters
+        function getUrlParams() {
+            const params = {};
+            const queryString = window.location.search.substring(1);
+            const pairs = queryString.split('&');
+            
+            for (const pair of pairs) {
+                const [key, value] = pair.split('=');
+                params[decodeURIComponent(key)] = decodeURIComponent(value || '');
+            }
+            
+            return params;
+        }
+
+        // Display the message from URL parameters
+        function displayMessage() {
+            const params = getUrlParams();
+            const messageDisplay = document.getElementById('messageDisplay');
+            
+            if (params.name && params.email && params.message) {
+                // Create message box
+                const messageBox = document.createElement('div');
+                messageBox.className = 'message-box';
+                
+                // Create message header
+                const messageHeader = document.createElement('div');
+                messageHeader.className = 'message-header';
+                
+                const sender = document.createElement('div');
+                sender.innerHTML = `<strong>From:</strong> ${params.name} (${params.email})`;
+                
+                const date = document.createElement('div');
+                date.innerHTML = `<strong>Date:</strong> ${new Date().toLocaleString()}`;
+                
+                messageHeader.appendChild(sender);
+                messageHeader.appendChild(date);
+                
+                // Create message content
+                const messageContent = document.createElement('div');
+                messageContent.className = 'message-content';
+                messageContent.textContent = params.message;
+                
+                // Assemble message box
+                messageBox.appendChild(messageHeader);
+                messageBox.appendChild(messageContent);
+                
+                // Add to display
+                messageDisplay.appendChild(messageBox);
+            } else {
+                // If no message parameters found
+                messageDisplay.innerHTML = '<p class="no-messages">No message to display. <a href="index.html#contact">Send a message</a>.</p>';
+            }
+        }
+        
+        // Run when page loads
+        window.onload = displayMessage;
+    </script>
+</body>
+</html>
