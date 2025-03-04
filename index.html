@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>CubeDodge</title>
   <link rel="stylesheet" href="./style.css">
-
 </head>
 <body>
 <!-- partial:index.partial.html -->
@@ -42,9 +41,103 @@
         .latest-news {
             padding-top: 30px; /* Reduced padding to raise the pictures */
         }
+        
+        /* Navigation styles */
+        .nav-container {
+            background: #274c77;
+            padding: 10px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .nav-menu li {
+            margin: 0 15px;
+        }
+        
+        .nav-menu a {
+            color: #e7ecef;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 3px;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-menu a:hover {
+            background-color: #6096ba;
+        }
+        
+        /* Contact section styles */
+        .contact-section {
+            background: #333;
+            color: white;
+            padding: 50px 0;
+            text-align: center;
+        }
+        
+        .contact-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+        }
+        
+        .contact-form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .contact-form textarea {
+            height: 150px;
+            resize: vertical;
+        }
+        
+        .contact-form button {
+            background: #ff3355;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .contact-form button:hover {
+            background: #e62e4c;
+        }
     </style>
 </head>
 <body style="background: #e7ecef; color: #274c77;">
+    <!-- Navigation -->
+    <div class="nav-container">
+        <ul class="nav-menu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li><a href="https://github.com/CrystalPT/CubeDodge/releases/">Versions</a></li>
+            <li><a href="https://discord.gg/cubedodge">Discord</a></li>
+        </ul>
+    </div>
+
     <section class="hero" style="background: #6096ba;">
         <video autoplay muted loop class="background-video">
             <source src="videos/background.mp4" type="video/mp4">
@@ -54,8 +147,8 @@
             <h2>A Thrilling 2D Dodge Game Experience</h2>
             <a href="https://github.com/CrystalPT/CubeDodge/releases/download/early/CubeDodge.exe" download class="play-button" style="background: #274c77; color: #e7ecef;">PLAY NOW</a>
             <div class="button-container">
-                <a href="https://github.com/CrystalPT/CubeDodge/releases" class="secondary-button">ALL VERSIONS</a>
-                <a href="https://discord.gg/5puEs9gufV" class="secondary-button">DISCORD</a>
+                <a href="https://github.com/CrystalPT/CubeDodge/releases/" class="secondary-button">ALL VERSIONS</a>
+                <a href="https://discord.gg/cubedodge" class="secondary-button">DISCORD</a>
             </div>
         </div>
     </section>
@@ -75,6 +168,22 @@
                 <img src="update3.jpg" alt="Update 3">
                 <h3>Improved Game Mechanics</h3>
             </div>
+        </div>
+    </section>
+    
+    <!-- Contact Us Section -->
+    <section id="contact" class="contact-section">
+        <h2>Contact Us</h2>
+        <div class="contact-info">
+            <p>Email: info@cubedodge.com</p>
+        </div>
+        <div class="contact-form">
+            <form action="contact.html" method="get">
+                <input type="text" name="name" placeholder="Your Name" required>
+                <input type="email" name="email" placeholder="Your Email" required>
+                <textarea name="message" placeholder="Your Message" required></textarea>
+                <button type="submit">Send Message</button>
+            </form>
         </div>
     </section>
 </body>
