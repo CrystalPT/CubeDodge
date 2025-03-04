@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Message Received - CubeDodge</title>
+    <title>Admin Message Viewer - CubeDodge</title>
     <link rel="stylesheet" href="./style.css">
     <style>
         body {
@@ -11,6 +11,7 @@
             background: #e7ecef;
             color: #274c77;
             padding-top: 60px;
+            margin: 0;
         }
         
         .nav-container {
@@ -62,6 +63,29 @@
             margin-bottom: 30px;
         }
         
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .message-count {
+            background: #274c77;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        
+        .clear-btn {
+            background: #ff3355;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
         .message-box {
             background: #a3cef1;
             padding: 20px;
@@ -98,6 +122,54 @@
             text-align: center;
             font-style: italic;
             color: #666;
+            padding: 30px;
+            background: #f1f1f1;
+            border-radius: 5px;
+        }
+        
+        .delete-message {
+            background: #ff3355;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        /* Password protection styling */
+        #loginContainer {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        #passwordForm input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        #passwordForm button {
+            background: #274c77;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        #incorrectPassword {
+            color: #ff3355;
+            display: none;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -112,73 +184,129 @@
         </ul>
     </div>
 
-    <div class="container">
-        <h1>Message Received</h1>
+    <!-- Login Container (shown first) -->
+    <div id="loginContainer">
+        <h2>Admin Access Required</h2>
+        <p>Please enter the password to view messages</p>
         
-        <div id="messageDisplay">
-            <!-- Messages will be displayed here -->
+        <form id="passwordForm">
+            <input type="password" id="passwordInput" placeholder="Enter password">
+            <button type="submit">Access Messages</button>
+        </form>
+        
+        <p id="incorrectPassword">Incorrect password. Please try again.</p>
+    </div>
+
+    <!-- Messages Container (hidden until password entered) -->
+    <div id="messagesContainer" style="display: none;">
+        <div class="container">
+            <div class="admin-header">
+                <h1>Message Inbox</h1>
+                <span class="message-count" id="messageCount">0 messages</span>
+            </div>
+            
+            <button id="clearMessages" class="clear-btn">Clear All Messages</button>
+            
+            <div id="messagesList">
+                <!-- Messages will be displayed here -->
+            </div>
+            
+            <a href="index.html" class="back-button">Back to Home</a>
         </div>
-        
-        <a href="index.html" class="back-button">Back to Home</a>
     </div>
 
     <script>
-        // Get URL parameters
-        function getUrlParams() {
-            const params = {};
-            const queryString = window.location.search.substring(1);
-            const pairs = queryString.split('&');
+        // Simple password protection
+        // In a real application, this should be server-side
+        // The password is "cubedodge" (this is just for demonstration)
+        const ADMIN_PASSWORD = "cubedodge";
+        
+        document.getElementById('passwordForm').addEventListener('submit', function(event) {
+            event.preventDefault();
             
-            for (const pair of pairs) {
-                const [key, value] = pair.split('=');
-                params[decodeURIComponent(key)] = decodeURIComponent(value || '');
+            const enteredPassword = document.getElementById('passwordInput').value;
+            
+            if (enteredPassword === ADMIN_PASSWORD) {
+                // Hide login, show messages
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('messagesContainer').style.display = 'block';
+                
+                // Load messages
+                loadMessages();
+            } else {
+                // Show error
+                document.getElementById('incorrectPassword').style.display = 'block';
+            }
+        });
+        
+        // Load messages from localStorage
+        function loadMessages() {
+            const messagesList = document.getElementById('messagesList');
+            const messages = JSON.parse(localStorage.getItem('cubeDodgeMessages') || '[]');
+            
+            // Update message count
+            document.getElementById('messageCount').textContent = `${messages.length} message${messages.length !== 1 ? 's' : ''}`;
+            
+            // Clear the list first
+            messagesList.innerHTML = '';
+            
+            if (messages.length === 0) {
+                messagesList.innerHTML = '<div class="no-messages">No messages to display</div>';
+                return;
             }
             
-            return params;
-        }
-
-        // Display the message from URL parameters
-        function displayMessage() {
-            const params = getUrlParams();
-            const messageDisplay = document.getElementById('messageDisplay');
-            
-            if (params.name && params.email && params.message) {
-                // Create message box
+            // Display messages in reverse order (newest first)
+            messages.slice().reverse().forEach(function(message, index) {
                 const messageBox = document.createElement('div');
                 messageBox.className = 'message-box';
+                messageBox.dataset.index = messages.length - 1 - index; // Store original index for deletion
                 
-                // Create message header
-                const messageHeader = document.createElement('div');
-                messageHeader.className = 'message-header';
+                const date = new Date(message.date);
+                const formattedDate = date.toLocaleString();
                 
-                const sender = document.createElement('div');
-                sender.innerHTML = `<strong>From:</strong> ${params.name} (${params.email})`;
+                messageBox.innerHTML = `
+                    <div class="message-header">
+                        <div><strong>From:</strong> ${message.name} (${message.email})</div>
+                        <div><strong>Date:</strong> ${formattedDate}</div>
+                    </div>
+                    <div class="message-content">${message.message}</div>
+                    <button class="delete-message">Delete</button>
+                `;
                 
-                const date = document.createElement('div');
-                date.innerHTML = `<strong>Date:</strong> ${new Date().toLocaleString()}`;
-                
-                messageHeader.appendChild(sender);
-                messageHeader.appendChild(date);
-                
-                // Create message content
-                const messageContent = document.createElement('div');
-                messageContent.className = 'message-content';
-                messageContent.textContent = params.message;
-                
-                // Assemble message box
-                messageBox.appendChild(messageHeader);
-                messageBox.appendChild(messageContent);
-                
-                // Add to display
-                messageDisplay.appendChild(messageBox);
-            } else {
-                // If no message parameters found
-                messageDisplay.innerHTML = '<p class="no-messages">No message to display. <a href="index.html#contact">Send a message</a>.</p>';
-            }
+                messagesList.appendChild(messageBox);
+            });
+            
+            // Add event listeners to delete buttons
+            document.querySelectorAll('.delete-message').forEach(button => {
+                button.addEventListener('click', function() {
+                    const messageBox = this.parentElement;
+                    const index = parseInt(messageBox.dataset.index);
+                    deleteMessage(index);
+                });
+            });
         }
         
-        // Run when page loads
-        window.onload = displayMessage;
+        // Delete a single message
+        function deleteMessage(index) {
+            let messages = JSON.parse(localStorage.getItem('cubeDodgeMessages') || '[]');
+            
+            // Remove the message at the specified index
+            messages.splice(index, 1);
+            
+            // Save the updated messages
+            localStorage.setItem('cubeDodgeMessages', JSON.stringify(messages));
+            
+            // Reload messages
+            loadMessages();
+        }
+        
+        // Clear all messages
+        document.getElementById('clearMessages').addEventListener('click', function() {
+            if (confirm('Are you sure you want to delete all messages? This cannot be undone.')) {
+                localStorage.removeItem('cubeDodgeMessages');
+                loadMessages();
+            }
+        });
     </script>
 </body>
 </html>
